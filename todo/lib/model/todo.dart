@@ -19,3 +19,7 @@ class Todo {
     this.isDone = false
   });
 } 
+  List<Todo> todos = [
+    Todo(title: "tes", description: 'tes'),
+    Todo(title: "tes", description: 'tes'),
+  ];
