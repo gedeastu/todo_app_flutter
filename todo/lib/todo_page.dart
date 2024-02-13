@@ -34,6 +34,13 @@ class _TodoListState extends State<TodoList> {
     refreshList();
   }
 
+  void addItem(){
+    todoList.add(Todo(nama: _nameTextField.text, deskripsi: _descriptionTextField.text));
+    refreshList();
+    _nameTextField.text = '';
+    _descriptionTextField.text = '';
+  }
+
   void deleteItem(int index){
       todoList.removeAt(index);
       refreshList();
@@ -55,11 +62,12 @@ class _TodoListState extends State<TodoList> {
             Navigator.of(context).pop();
           }, child: const Text("Close")),
           ElevatedButton(onPressed: (){
-      
+             Navigator.of(context).pop();
+             addItem();
           }, child: const Text("Add"))
         ],
         content: SizedBox(
-          height: 350,
+          height: 200,
           width: MediaQuery.of(context).size.width,
           child: Column(
             children: [
