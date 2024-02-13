@@ -1,13 +1,28 @@
 class Todo{
-  String nama;
-  String deskripsi;
+  String name;
+  String description;
   bool done;
 
-  Todo({required this.nama,required this.deskripsi,this.done = false});
+  Todo({required this.name,required this.description,this.done = false});
   
   static List<Todo> dummyData = [
-    Todo(nama: "Latihan Mobile Programming", deskripsi: "membuat sebuah aplikasi sederhana"),
-    Todo(nama: "Latihan Web Programming", deskripsi: "membuat sebuah Web sederhana",done: true),
-    Todo(nama: "Latihan Machine Learning", deskripsi: "mengumpulkan sebuah Model sederhana"),
+    Todo(name: "Latihan Mobile Programming", description: "membuat sebuah aplikasi sederhana"),
+    Todo(name: "Latihan Web Programming", description: "membuat sebuah Web sederhana",done: true),
+    Todo(name: "Latihan Machine Learning", description: "mengumpulkan sebuah Model sederhana"),
   ];
+
+  Map<String,dynamic> toMap(){
+    return <String,dynamic>{ 
+      "name" : name,
+      "description" : description
+     };
+  }
+
+  factory Todo.fromMap(Map<String,dynamic>map){
+    return Todo(
+      name: map['nama'] as String, 
+      description: map['description'] as String,
+      done: map['done'] == 0 ? false : true
+    );
+  }
 }

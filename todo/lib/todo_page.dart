@@ -24,34 +24,35 @@ class TodoList extends StatefulWidget {
 }
 
 class _TodoListState extends State<TodoList> {
+
+  //TextEditingController
   final TextEditingController _nameTextField = TextEditingController();
   final TextEditingController _descriptionTextField = TextEditingController();
 
+  //Make List Variable from Todo Object
   List<Todo> todoList = Todo.dummyData;
 
+
+  //Function CRUD in Tempory Memory
   void updateItem(int index,bool done){
     todoList[index].done = done;
     refreshList();
   }
-
   void addItem(){
-    todoList.add(Todo(nama: _nameTextField.text, deskripsi: _descriptionTextField.text));
+    todoList.add(Todo(name: _nameTextField.text, description: _descriptionTextField.text));
     refreshList();
     _nameTextField.text = '';
     _descriptionTextField.text = '';
   }
-
   void deleteItem(int index){
       todoList.removeAt(index);
       refreshList();
   }
-
   void refreshList(){
     setState(() {
       todoList = todoList;
     });
   }
-
   void showForm(){
     showDialog(context: context, builder:(context) =>
       AlertDialog(
@@ -92,6 +93,7 @@ class _TodoListState extends State<TodoList> {
       ),);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,8 +122,8 @@ class _TodoListState extends State<TodoList> {
                           updateItem(index, !todoList[index].done);
                         },
                       ),
-                      title: Text(todoList[index].nama),
-                      subtitle: Text(todoList[index].deskripsi),
+                      title: Text(todoList[index].name),
+                      subtitle: Text(todoList[index].description),
                       trailing: IconButton(onPressed:(){
                         deleteItem(index);
                       }, icon: const Icon(Icons.delete)),
