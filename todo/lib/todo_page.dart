@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo/database_helper.dart';
 import 'package:todo/todo.dart';
 
 class TodoPage extends StatelessWidget {
@@ -28,29 +29,43 @@ class _TodoListState extends State<TodoList> {
   //TextEditingController
   final TextEditingController _nameTextField = TextEditingController();
   final TextEditingController _descriptionTextField = TextEditingController();
+  final TextEditingController _searchTextField = TextEditingController();
 
   //Make List Variable from Todo Object
-  List<Todo> todoList = Todo.dummyData;
+  List<Todo> todoList = [];
 
+  //Call the Database
+  final dbHelper = DatabaseHelper();
 
-  //Function CRUD in Tempory Memory
-  void updateItem(int index,bool done){
-    todoList[index].done = done;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
     refreshList();
   }
-  void addItem(){
+
+  //Function CRUD in Tempory Memory
+  void updateItem(int index,bool done) async {
+    todoList[index].done = done;
+    await dbHelper.updateTodo(todoList[index]);
+    refreshList();
+  }
+  void addItem() async{
+    await dbHelper.insertTodo(Todo(name: _nameTextField.text, description: _descriptionTextField.text));
     todoList.add(Todo(name: _nameTextField.text, description: _descriptionTextField.text));
     refreshList();
     _nameTextField.text = '';
     _descriptionTextField.text = '';
   }
-  void deleteItem(int index){
-      todoList.removeAt(index);
+  void deleteItem(int id) async{
+      await dbHelper.deleteTodo(id);
+      //todoList.removeAt(index);
       refreshList();
   }
-  void refreshList(){
+  void refreshList() async {
+    final todos = await dbHelper.getAllTodos();
     setState(() {
-      todoList = todoList;
+      todoList = todos;
     });
   }
   void showForm(){
@@ -92,7 +107,18 @@ class _TodoListState extends State<TodoList> {
         ),
       ),);
   }
-
+  void searchTodo([String? words]) async{
+    String text = _searchTextField.text.trim();
+    List<Todo> todos = [];
+    if (text.isEmpty) {
+       todos = await dbHelper.getAllTodos();
+    } else {
+      todos = await dbHelper.searchTodos(text);
+    }
+    setState(() {
+      todoList = todos;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,6 +133,20 @@ class _TodoListState extends State<TodoList> {
 
       body: Column(
         children: [
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+            child: TextField(
+            decoration: InputDecoration(
+              hintText: "Cari apa?",
+              prefixIcon: Icon(Icons.search),
+              border: OutlineInputBorder(),
+            ),
+            controller: _searchTextField,
+            onChanged: (value) {
+              searchTodo(_searchTextField.text);
+            },
+            ),
+          ),
           Expanded(
             child: ListView.separated(
               padding: const EdgeInsets.all(5),
@@ -125,7 +165,7 @@ class _TodoListState extends State<TodoList> {
                       title: Text(todoList[index].name),
                       subtitle: Text(todoList[index].description),
                       trailing: IconButton(onPressed:(){
-                        deleteItem(index);
+                        deleteItem(todoList[index].id ?? 0);
                       }, icon: const Icon(Icons.delete)),
                     )
                   ],
